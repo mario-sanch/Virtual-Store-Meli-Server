@@ -1,8 +1,8 @@
 module.exports = (sequelize, DataTypes) => {
-  const Product = sequelize.define(
-    "Product",
+  const Category = sequelize.define(
+    "Category",
     {
-      ProductId: {
+      CategoryId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -11,12 +11,6 @@ module.exports = (sequelize, DataTypes) => {
       Name: {
         type: DataTypes.STRING,
         allowNull: false,
-      },
-      ImgUrl: {
-        type: DataTypes.STRING,
-      },
-      Price: {
-        type: DataTypes.DOUBLE,
       },
       Description: {
         type: DataTypes.STRING,
@@ -27,12 +21,9 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
-      tableName: "products",
+      tableName: "categories",
     }
   );
 
-  Product.associate = (models) => {
-    Product.belongsToMany(models.Order, { through: "ProductsByOrder" });
-  };
-  return Product;
+  return Category;
 };
