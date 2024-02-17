@@ -1,12 +1,21 @@
 const express = require("express");
 const router = express.Router();
 const { check } = require("express-validator");
-
 const productController = require("../controllers/productController");
 
 router.get("/", productController.product_list);
 
-router.get("/:productId", productController.product_byId);
+router.get(
+  "/byCategory/:categoryId",
+  [check("categoryId").isInt().escape()],
+  productController.productsByCategory
+);
+
+router.get(
+  "/byProductId/:productId",
+  [check("productId").isInt().escape()],
+  productController.product_byId
+);
 
 router.post(
   "/",
@@ -23,7 +32,7 @@ router.post(
   productController.product_create
 );
 
-router.put("/", productController.product_update);
+router.put("/:productId", productController.product_update);
 
 router.delete("/:productId", productController.product_delete);
 

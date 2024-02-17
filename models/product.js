@@ -33,6 +33,8 @@ module.exports = (sequelize, DataTypes) => {
 
   Product.associate = (models) => {
     Product.belongsToMany(models.Order, { through: "ProductsByOrder" });
+
+    Product.belongsToMany(models.Category, { through: "ProductsByCategory" });
   };
   return Product;
 };

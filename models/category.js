@@ -25,5 +25,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
+  Category.associate = (models) => {
+    Category.belongsToMany(models.Product, { through: "ProductsByCategory" });
+  };
+
   return Category;
 };
