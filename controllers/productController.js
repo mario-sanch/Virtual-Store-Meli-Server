@@ -1,10 +1,10 @@
-const db = require("../models/index");
+const productRepository = require("../repositories/productRepository");
 const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
 
 //Add query params for pagination, limit and enabled
 exports.product_list = asyncHandler(async (req, res, next) => {
-  const products = await db.Product.findAll();
+  const products = await productRepository.productList();
   res.status(200).json(products);
 });
 
@@ -19,14 +19,7 @@ exports.productsByCategory = asyncHandler(async (req, res, next) => {
 
   const categoryId = req.params.categoryId;
 
-  const products = await db.Product.findAll({
-    include: {
-      model: db.Category,
-      where: {
-        CategoryId: categoryId,
-      },
-    },
-  });
+  const products = await productRepository.productsByCategory(categoryId);
 
   res.status(200).json(products);
 });
@@ -40,7 +33,7 @@ exports.product_byId = asyncHandler(async (req, res, next) => {
 
   const productId = req.params.productId;
 
-  const product = await db.Product.findByPk(productId);
+  const product = await productRepository.productById(productId);
 
   res.status(200).json({ product });
 });
@@ -53,9 +46,9 @@ exports.product_create = asyncHandler(async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const newUser = await db.Product.create(req.body);
+    const newProduct = await productRepository.createProduct(req.body);
 
-    res.status(201).json(newUser);
+    res.status(201).json(newProduct);
   } catch (err) {
     res.json({ err: err });
   }
@@ -65,7 +58,7 @@ exports.product_update = asyncHandler(async (req, res, next) => {
   try {
     const { productId } = req.params;
 
-    const foundProduct = await db.Product.findByPk(productId);
+    const foundProduct = await productRepository.productById(productId);
 
     if (!foundProduct) {
       return res
@@ -73,25 +66,23 @@ exports.product_update = asyncHandler(async (req, res, next) => {
         .json({ error: true, message: "producto no encontrado" });
     }
 
-    const { Name, ImgUrl, Price, Description, Enable } = req.body;
-
-    await db.Product.update(
-      {
-        Name: Name,
-        ImgUrl: ImgUrl,
-        Price: Price,
-        Description: Description,
-        Enable: Enable,
-      },
-      {
-        where: {
-          ProductId: productId,
-        },
-      }
+    const updatedProduct = await productRepository.updateProduct(
+      req.body,
+      productId
     );
 
-    return res.status(200).json(foundProduct);
+    return res.status(200).json(updatedProduct);
   } catch (err) {}
 });
 
-exports.product_delete = asyncHandler(async (req, res, next) => {});
+exports.product_delete = asyncHandler(async (req, res, next) => {
+  const { productId } = req.params;
+
+  //check if product exists
+
+  await productRepository.deleteProduct(productId);
+
+  //retrive product again to check if enable is false
+
+  return res.status(200).json({ msg: "product disabled" });
+});
