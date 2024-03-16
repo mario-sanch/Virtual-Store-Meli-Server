@@ -13,7 +13,14 @@ router.get(
 
 router.get(
   "/byProductId/:productId",
-  [check("productId").isInt().escape()],
+  [
+    check(
+      "productId",
+      "El identificador del producto no se encuentra en un formato valido"
+    )
+      .isInt()
+      .escape(),
+  ],
   productController.product_byId
 );
 
@@ -21,19 +28,72 @@ router.post(
   "/",
   [
     check("Name", "El nombre del producto es requerido").not().isEmpty(),
-    check("Enable", "Es necesario indicar si el producto esta disponoble o no")
+    check("Enable", "El indicador de disponibilidad del producto es requerido")
       .not()
       .isEmpty(),
-    check(
-      "Enable",
-      "El valor de enable no esta en un formato correcto"
-    ).isBoolean(),
+    check("Enable", "El valor no esta en un formato correcto").isBoolean(),
   ],
   productController.product_create
 );
 
-router.put("/:productId", productController.product_update);
+router.put(
+  "/:productId",
+  [
+    check(
+      "productId",
+      "El identificador no se encuentra en un formato correcto"
+    ).isInt(),
+    check("Name", "El nombre del producto es requerido").not().isEmpty(),
+    check("Enable", "El indicador de disponibilidad del producto es requerido")
+      .not()
+      .isEmpty(),
+    check(
+      "Enable",
+      "El valor no se encuentra en un formato correcto"
+    ).isBoolean(),
+  ],
+  productController.product_update
+);
 
-router.delete("/:productId", productController.product_delete);
+router.delete(
+  "/:productId",
+  [
+    check(
+      "productId",
+      "El identificador no se encuentra en un formato correcto"
+    ).isInt(),
+  ],
+  productController.product_delete
+);
+
+router.post(
+  "/productByCategory/:productId/:categoryId",
+  [
+    check(
+      "productId",
+      "El identificador del producto se encuentra en un formato no valido"
+    ).isInt(),
+    check(
+      "categoryId",
+      "El identificador de la categoria se encuentra en un formato no valido"
+    ).isInt(),
+  ],
+  productController.createProductByCategory
+);
+
+router.delete(
+  "/productByCategory/:productId/:categoryId",
+  [
+    check(
+      "productId",
+      "El identificador del producto no se encuentra en un formato valido"
+    ).isInt(),
+    check(
+      "categoryId",
+      "El identificador de la categoria no se encuentra en un formato valido"
+    ).isInt(),
+  ],
+  productController.deleteProductByCategory
+);
 
 module.exports = router;

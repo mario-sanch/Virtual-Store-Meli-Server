@@ -21,7 +21,7 @@ router.get(
 router.post(
   "/",
   [
-    check("Name", "El nombre de la categoria no puede esta vacio")
+    check("Name", "El nombre de la categoria no puede estar vacio")
       .not()
       .isEmpty(),
     check("Enable", "Debe especificar si la categoria esta disponible")
@@ -35,12 +35,30 @@ router.post(
   categoryController.categoryCreate
 );
 
-router.put("/", (req, res) => {
-  res.send("response from category put");
-});
+router.put(
+  "/:categoryId",
+  [
+    check(
+      "categoryId",
+      "El identificador de la categoria no se encuentra en un formato correcto"
+    )
+      .isInt()
+      .escape(),
+  ],
+  categoryController.categoryUpdate
+);
 
-router.delete("/:categoryId", (req, res) => {
-  res.send(`response from category delete ${req.params.categoryId}`);
-});
+router.delete(
+  "/:categoryId",
+  [
+    check(
+      "categoryId",
+      "El identificador de la categoria se encuentra en un forrmato no valido"
+    )
+      .isInt()
+      .escape(),
+  ],
+  categoryController.deleteCategory
+);
 
 module.exports = router;

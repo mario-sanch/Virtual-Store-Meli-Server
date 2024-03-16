@@ -50,3 +50,15 @@ exports.deleteProduct = async (productId) => {
 
   return;
 };
+
+exports.createProductByCategory = async (product, category) => {
+  const productByCategory = await product.addCategory(category);
+
+  return productByCategory;
+};
+
+exports.removeProductByCategory = async (product, category) => {
+  const result = await product.removeCategory(category);
+
+  return result;
+};

@@ -1,13 +1,32 @@
 const express = require("express");
 const router = express.Router();
+const { check } = require("express-validator");
+const orderController = require("../controllers/orderController");
 
-router.get("/byUserId/:userId", (req, res) => {
-  res.send(`response from orders by user id ${req.params.userId}`);
-});
+//add pagination and limit
+router.get("/", orderController.orderList);
 
-router.get("/byStatus/:status", (req, res) => {
-  res.send(`response from orders by status ${req.params.status}`);
-});
+router.get(
+  "/byUserId/:userId",
+  [
+    check(
+      "userId",
+      "El identificador del usuario no se encuentra en un formato valido"
+    ).isNumeric(),
+  ],
+  orderController.ordersByUserId
+);
+
+router.get(
+  "/byStatus/:statusId",
+  [
+    check(
+      "statusId",
+      "El formato del identificador no esta en un formato correcto"
+    ).isNumeric(),
+  ],
+  orderController.ordersByStatusId
+);
 
 router.get("/byDates/:from-:to", (req, res) => {
   res.send(
@@ -15,16 +34,63 @@ router.get("/byDates/:from-:to", (req, res) => {
   );
 });
 
-router.post("/", (req, res) => {
-  res.send("response from orders post");
-});
+router.post(
+  "/",
+  [
+    /*check(
+      "OrderDate",
+      "La fecha de la orden no se encuentra en un formato correcto"
+    ).isDate(),*/
+    check("OrderDate", "La fecha se encuentra vacia").not().isEmpty(),
+    check(
+      "TotalPrice",
+      "El precio de la orden no se encuentra en un formato correcto"
+    ).isNumeric(),
+    check(
+      "UserId",
+      "El identificador del usuario no se encuentra en un formato valido"
+    ).isNumeric(),
+    check(
+      "StatusId",
+      "El identificador del estatus de la orden no se encuentra en un formato valido"
+    ).isNumeric(),
+  ],
+  orderController.createOrder
+);
 
-router.put("/", (req, res) => {
-  res.send("response from orders put");
-});
+router.put(
+  "/:orderId",
+  [
+    check(
+      "orderId",
+      "El identificador de la orden no se encuentra en un formato valido"
+    ).isNumeric(),
+    check("OrderDate", "La fecha se encuentra vacia").not().isEmpty(),
+    check(
+      "TotalPrice",
+      "El precio de la orden no se encuentra en un formato correcto"
+    ).isNumeric(),
+    check(
+      "UserId",
+      "El identificador del usuario no se encuentra en un formato valido"
+    ).isNumeric(),
+    check(
+      "StatusId",
+      "El identificador del estatus de la orden no se encuentra en un formato valido"
+    ).isNumeric(),
+  ],
+  orderController.updateOrder
+);
 
-router.delete("/:orderId", (req, res) => {
-  res.send(`response from orders delete ${req.params.orderId}`);
-});
+router.delete(
+  "/:orderId",
+  [
+    check(
+      "orderId",
+      "El identificador de la orden no se encuentra en un formato valido"
+    ).isInt(),
+  ],
+  orderController.deleteOrder
+);
 
 module.exports = router;

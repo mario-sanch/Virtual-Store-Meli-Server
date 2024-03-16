@@ -17,3 +17,20 @@ exports.categoryCreate = async (category) => {
 
   return newCategory;
 };
+
+exports.updateCategory = async (category, categoryId) => {
+  const result = await db.Category.update(category, {
+    where: { CategoryId: categoryId },
+  });
+
+  return result;
+};
+
+exports.deleteCategory = async (categoryId) => {
+  const result = await db.Category.update(
+    { Enable: 0 },
+    { where: { CategoryId: categoryId } }
+  );
+
+  return result;
+};
